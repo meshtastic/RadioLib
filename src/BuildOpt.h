@@ -30,6 +30,80 @@
  * and then specifying all platform parameters in the section below. This will override automatic
  * platform detection.
  */
+#if defined(__AVR__) && !(defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_AVR_NANO_EVERY))
+   // Arduino AVR boards (except for megaAVR) - Uno, Mega etc.
+   #define RADIOLIB_PLATFORM                          "Arduino AVR"
+   #define RADIOLIB_PIN_TYPE                          uint8_t
+   #define RADIOLIB_PIN_MODE                          uint8_t
+   #define RADIOLIB_PIN_STATUS                        uint8_t
+   #define RADIOLIB_INTERRUPT_STATUS                   RADIOLIB_PIN_STATUS
+   #define RADIOLIB_NC                                (0xFF)
+
+#elif defined(ESP8266)
+   // ESP8266 boards
+   #define RADIOLIB_PLATFORM                          "ESP8266"
+   #define RADIOLIB_PIN_TYPE                          uint8_t
+   #define RADIOLIB_PIN_MODE                          uint8_t
+   #define RADIOLIB_PIN_STATUS                        uint8_t
+   #define RADIOLIB_INTERRUPT_STATUS                   RADIOLIB_PIN_STATUS
+   #define RADIOLIB_NC                                (0xFF)
+
+   // RadioLib has ESPS8266 driver, this must be disabled to use ESP8266 as platform
+   #define _RADIOLIB_ESP8266_H
+
+#elif defined(ESP32)
+  // ESP32 boards
+  #define RADIOLIB_PLATFORM                           "ESP32"
+  #define RADIOLIB_PIN_TYPE                           uint8_t
+  #define RADIOLIB_PIN_MODE                           uint8_t
+  #define RADIOLIB_PIN_STATUS                         uint8_t
+  #define RADIOLIB_INTERRUPT_STATUS                   RADIOLIB_PIN_STATUS
+  #define RADIOLIB_NC                                 (0xFF)
+  #define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
+  #define RADIOLIB_HARDWARE_SERIAL_PORT               &Serial1
+
+#elif defined(ARDUINO_ARCH_STM32)
+  // official STM32 Arduino core (https://github.com/stm32duino/Arduino_Core_STM32)
+  #define RADIOLIB_PLATFORM                           "Arduino STM32 (official)"
+  #define RADIOLIB_PIN_TYPE                           uint32_t
+  #define RADIOLIB_PIN_MODE                           uint32_t
+  #define RADIOLIB_PIN_STATUS                         uint32_t
+  #define RADIOLIB_INTERRUPT_STATUS                   RADIOLIB_PIN_STATUS
+  #define RADIOLIB_NC                                 (0xFFFFFFFF)
+  #define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
+  #define RADIOLIB_HARDWARE_SERIAL_PORT               &Serial1
+
+#elif defined(SAMD_SERIES)
+  // Arduino SAMD boards - Zero, MKR, etc.
+  #define RADIOLIB_PLATFORM                           "Arduino SAMD"
+  #define RADIOLIB_PIN_TYPE                           uint32_t
+  #define RADIOLIB_PIN_MODE                           uint32_t
+  #define RADIOLIB_PIN_STATUS                         uint32_t
+  #define RADIOLIB_INTERRUPT_STATUS                   RADIOLIB_PIN_STATUS
+  #define RADIOLIB_NC                                 (0xFFFFFFFF)
+  #define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
+  #define RADIOLIB_HARDWARE_SERIAL_PORT               &Serial1
+
+#elif defined(__SAM3X8E__)
+  // Arduino Due
+  #define RADIOLIB_PLATFORM                           "Arduino Due"
+  #define RADIOLIB_PIN_TYPE                           uint32_t
+  #define RADIOLIB_PIN_MODE                           uint32_t
+  #define RADIOLIB_PIN_STATUS                         uint32_t
+  #define RADIOLIB_INTERRUPT_STATUS                   RADIOLIB_PIN_STATUS
+  #define RADIOLIB_NC                                 (0xFFFFFFFF)
+  #define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
+  #define RADIOLIB_HARDWARE_SERIAL_PORT               &Serial1
+
+#elif (defined(NRF52832_XXAA) || defined(NRF52840_XXAA)) && !defined(ARDUINO_ARDUINO_NANO33BLE)
+  // Adafruit nRF52 boards
+  #define RADIOLIB_PLATFORM                           "Adafruit nRF52"
+  #define RADIOLIB_PIN_TYPE                           uint32_t
+  #define RADIOLIB_PIN_MODE                           uint32_t
+  #define RADIOLIB_PIN_STATUS                         uint32_t
+  #define RADIOLIB_INTERRUPT_STATUS                   RADIOLIB_PIN_STATUS
+  #define RADIOLIB_NC                                 (0xFFFFFFFF)
+  #define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
 
 // uncomment to enable custom platform definition
 //#define RADIOLIB_CUSTOM_PLATFORM
@@ -50,8 +124,8 @@
   #define RADIOLIB_PROGMEM_READ_BYTE(addr)            pgm_read_byte(addr)
 
   // the following must be defined if the Arduino core does not support SoftwareSerial library
-  //#define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
-  //#define RADIOLIB_HARDWARE_SERIAL_PORT               Serial1
+  #define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
+  #define RADIOLIB_HARDWARE_SERIAL_PORT               &Serial1
 
   // the following must be defined if the Arduino core does not support tone function
   //#define RADIOLIB_TONE_UNSUPPORTED
@@ -88,6 +162,31 @@
   //#define RADIOLIB_EXCLUDE_MQTT
   //#define RADIOLIB_EXCLUDE_RTTY
   //#define RADIOLIB_EXCLUDE_SSTV
+
+#elif defined(ARDUINO_ARDUINO_NANO33BLE)
+  // Arduino Nano 33 BLE
+  #define RADIOLIB_PLATFORM                           "Arduino Nano 33 BLE"
+  #define RADIOLIB_PIN_TYPE                           pin_size_t
+  #define RADIOLIB_PIN_MODE                           PinMode
+  #define RADIOLIB_PIN_STATUS                         PinStatus
+  #define RADIOLIB_INTERRUPT_STATUS                   RADIOLIB_PIN_STATUS
+  #define RADIOLIB_NC                                 (0xFF)
+  #define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
+  #define RADIOLIB_HARDWARE_SERIAL_PORT               &Serial1
+
+  // Nano 33 BLE uses mbed libraries, which already contain ESP8266 driver
+  #define _RADIOLIB_ESP8266_H
+
+#elif defined(__STM32F4__) || defined(__STM32F1__)
+  // Arduino STM32 core by Roger Clark (https://github.com/rogerclarkmelbourne/Arduino_STM32)
+  #define RADIOLIB_PLATFORM                           "STM32duino (unofficial)"
+  #define RADIOLIB_PIN_TYPE                           uint8_t
+  #define RADIOLIB_PIN_MODE                           WiringPinMode
+  #define RADIOLIB_PIN_STATUS                         uint8_t
+  #define RADIOLIB_INTERRUPT_STATUS                   ExtIntTriggerMode
+  #define RADIOLIB_NC                                 (0xFF)
+  #define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
+  #define RADIOLIB_HARDWARE_SERIAL_PORT               &Serial1
 
 #else
   #if defined(__AVR__) && !(defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_AVR_NANO_EVERY) || defined(ARDUINO_ARCH_MEGAAVR))

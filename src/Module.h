@@ -4,9 +4,17 @@
 #include "TypeDef.h"
 
 #include <SPI.h>
+//#include <Wire.h>
+
+#ifndef RADIOLIB_HARDWARE_SERIAL_PORT
+// If a hardware serial port is not specified, assume the platform doesn't have one
+#define RADIOLIB_HARDWARE_SERIAL_PORT NULL
+#endif
+
 #ifndef RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
 #include <SoftwareSerial.h>
 #endif
+
 
 /*!
   \class Module
@@ -110,9 +118,9 @@ class Module {
       \param serial HardwareSerial to be used on ESP32 and SAMD. Defaults to 1
     */
 #ifdef RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
-    Module(RADIOLIB_PIN_TYPE cs, RADIOLIB_PIN_TYPE irq, RADIOLIB_PIN_TYPE rst, RADIOLIB_PIN_TYPE rx, RADIOLIB_PIN_TYPE tx, SPIClass& spi = RADIOLIB_DEFAULT_SPI, SPISettings spiSettings = SPISettings(2000000, MSBFIRST, SPI_MODE0), HardwareSerial* serial = &RADIOLIB_HARDWARE_SERIAL_PORT);
+    Module(RADIOLIB_PIN_TYPE cs, RADIOLIB_PIN_TYPE irq, RADIOLIB_PIN_TYPE rst, RADIOLIB_PIN_TYPE rx, RADIOLIB_PIN_TYPE tx, SPIClass& spi = SPI, SPISettings spiSettings = SPISettings(2000000, MSBFIRST, SPI_MODE0), HardwareSerial* serial = RADIOLIB_HARDWARE_SERIAL_PORT);
 #else
-    Module(RADIOLIB_PIN_TYPE cs, RADIOLIB_PIN_TYPE irq, RADIOLIB_PIN_TYPE rst, RADIOLIB_PIN_TYPE rx, RADIOLIB_PIN_TYPE tx, SPIClass& spi = RADIOLIB_DEFAULT_SPI, SPISettings spiSettings = SPISettings(2000000, MSBFIRST, SPI_MODE0), HardwareSerial* serial = nullptr);
+    Module(RADIOLIB_PIN_TYPE cs, RADIOLIB_PIN_TYPE irq, RADIOLIB_PIN_TYPE rst, RADIOLIB_PIN_TYPE rx, RADIOLIB_PIN_TYPE tx, SPIClass& spi = SPI, SPISettings spiSettings = SPISettings(2000000, MSBFIRST, SPI_MODE0), HardwareSerial* serial = nullptr);
 #endif
 
     /*!
