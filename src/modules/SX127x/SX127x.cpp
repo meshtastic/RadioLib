@@ -14,7 +14,7 @@ int16_t SX127x::begin(uint8_t chipVersion, uint8_t syncWord, uint16_t preambleLe
   // try to find the SX127x chip
   if(!SX127x::findChip(chipVersion)) {
     RADIOLIB_DEBUG_PRINTLN(F("No SX127x found!"));
-    _mod->term(RADIOLIB_USE_SPI);
+    // _mod->term(RADIOLIB_USE_SPI); don't teardown SPI interfaces that might be shared with other devices
     return(ERR_CHIP_NOT_FOUND);
   }
   RADIOLIB_DEBUG_PRINTLN(F("M\tSX127x"));
