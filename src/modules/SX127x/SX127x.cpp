@@ -8,7 +8,7 @@ SX127x::SX127x(Module* mod) : PhysicalLayer(SX127X_FREQUENCY_STEP_SIZE, SX127X_M
 int16_t SX127x::begin(uint8_t chipVersion, uint8_t syncWord, uint16_t preambleLength) {
   // set module properties
   _mod->init(RADIOLIB_USE_SPI);
-  Module::pinMode(_mod->getIrq(), INPUT);
+  Module::pinMode(_mod->getIrq(), INPUT_PULLUP);
   Module::pinMode(_mod->getGpio(), INPUT);
 
   // try to find the SX127x chip
