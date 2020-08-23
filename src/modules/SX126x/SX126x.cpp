@@ -709,6 +709,27 @@ int16_t SX126x::setCurrentLimit(float currentLimit) {
   return(writeRegister(SX126X_REG_OCP_CONFIGURATION, &rawLimit, 1));
 }
 
+int16_t SX126x::setRxGain(bool highGain) {
+  if(highGain) {
+    // We also need to add this register to the retension memory per 9.6 of datasheet
+    // othwerwise the setting will be discarded if the user is using SetRxDutyCycle
+
+    uint8_t s = 0x01;
+    int16_t err;
+    if((err = writeRegister(SX126X_REG_RX_GAIN_RETENTION_0, &s, 1)) != ERR_NONE)
+      return err;
+    s = 0x08;
+    if((err = writeRegister(SX126X_REG_RX_GAIN_RETENTION_1, &s, 1)) != ERR_NONE)
+      return err;
+    s = 0xac;
+    if((err = writeRegister(SX126X_REG_RX_GAIN_RETENTION_2, &s, 1)) != ERR_NONE)
+      return err;
+  }
+  // calculate raw value
+  uint8_t r = highGain ? 0x96 : 0x94; // Per datasheet section 9.6 two magic values
+  return(writeRegister(SX126X_REG_RX_GAIN, &r, 1));
+}
+
 float SX126x::getCurrentLimit() {
   // get the raw value
   uint8_t ocp = 0;

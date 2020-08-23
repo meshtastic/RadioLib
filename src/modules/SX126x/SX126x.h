@@ -647,9 +647,16 @@ class SX126x: public PhysicalLayer {
     int16_t setRxBandwidth(float rxBw);
 
     /*!
-      \brief Sets time-bandwidth product of Gaussian filter applied for shaping.
-      Allowed values are RADIOLIB_SHAPING_0_3, RADIOLIB_SHAPING_0_5, RADIOLIB_SHAPING_0_7 or RADIOLIB_SHAPING_1_0.
-      Set to RADIOLIB_SHAPING_NONE to disable data shaping.
+      \brief Sets receiver into either high gain mode or power saving mode.  Default is power saving.
+
+      \param highGain true for high gain mode
+
+      \returns \ref status_codes
+    */
+    int16_t setRxGain(bool highGain);
+
+    /*!
+      \brief Sets time-bandwidth product of Gaussian filter applied for shaping. Allowed values are 0.3, 0.5, 0.7 and 1.0. Set to 0 to disable shaping.
 
       \param sh Time-bandwidth product of Gaussian filter to be set.
 
