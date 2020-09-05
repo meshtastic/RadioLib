@@ -12,14 +12,14 @@ int16_t HTTPClient::get(String& url, String& response) {
 
 int16_t HTTPClient::get(const char* url, String& response) {
   // get the host address and endpoint
-  char* httpPrefix = strstr(url, "http://");
+  const char* httpPrefix = strstr(url, "http://");
   char* endpoint;
   char* host;
   if(httpPrefix != NULL) {
     // find the host string
-    char* hostStart = strchr(url, '/');
+    const char* hostStart = strchr(url, '/');
     hostStart = strchr(hostStart + 1, '/');
-    char* hostEnd = strchr(hostStart + 1, '/');
+    const char* hostEnd = strchr(hostStart + 1, '/');
     host = new char[hostEnd - hostStart];
     strncpy(host, hostStart + 1, hostEnd - hostStart - 1);
     host[hostEnd - hostStart - 1] = '\0';
@@ -29,7 +29,7 @@ int16_t HTTPClient::get(const char* url, String& response) {
     strcpy(endpoint, hostEnd);
   } else {
     // find the host string
-    char* hostEnd = strchr(url, '/');
+    const char* hostEnd = strchr(url, '/');
     host = new char[hostEnd - url + 1];
     strncpy(host, url, hostEnd - url);
     host[hostEnd - url] = '\0';
@@ -111,14 +111,14 @@ int16_t HTTPClient::get(const char* url, String& response) {
 
 int16_t HTTPClient::post(const char* url, const char* content, String& response, const char* contentType) {
   // get the host address and endpoint
-  char* httpPrefix = strstr(url, "http://");
+  const char* httpPrefix = strstr(url, "http://");
   char* endpoint;
   char* host;
   if(httpPrefix != NULL) {
     // find the host string
-    char* hostStart = strchr(url, '/');
+    const char* hostStart = strchr(url, '/');
     hostStart = strchr(hostStart + 1, '/');
-    char* hostEnd = strchr(hostStart + 1, '/');
+    const char* hostEnd = strchr(hostStart + 1, '/');
     host = new char[hostEnd - hostStart];
     strncpy(host, hostStart + 1, hostEnd - hostStart - 1);
     host[hostEnd - hostStart - 1] = '\0';
@@ -128,7 +128,7 @@ int16_t HTTPClient::post(const char* url, const char* content, String& response,
     strcpy(endpoint, hostEnd);
     } else {
     // find the host string
-    char* hostEnd = strchr(url, '/');
+    const char* hostEnd = strchr(url, '/');
     host = new char[hostEnd - url + 1];
     strncpy(host, url, hostEnd - url);
     host[hostEnd - url] = '\0';
