@@ -187,7 +187,16 @@
   #define RADIOLIB_NC                                 (0xFF)
   #define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
   #define RADIOLIB_HARDWARE_SERIAL_PORT               &Serial1
-
+  #define RADIOLIB_TONE_UNSUPPORTED
+#elif defined(PORTDUINO)
+  // Portduino (i.e. Arduino APIs but on top of Linux)
+  #define RADIOLIB_PLATFORM                           "Portduino"
+  #define RADIOLIB_PIN_TYPE                           uint8_t
+  #define RADIOLIB_PIN_MODE                           PinMode
+  #define RADIOLIB_PIN_STATUS                         PinStatus
+  #define RADIOLIB_INTERRUPT_STATUS                   RADIOLIB_PIN_STATUS
+  #define RADIOLIB_NC                                 (0xFF)
+  #define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
 #else
   #if defined(__AVR__) && !(defined(ARDUINO_AVR_UNO_WIFI_REV2) || defined(ARDUINO_AVR_NANO_EVERY) || defined(ARDUINO_ARCH_MEGAAVR))
     // Arduino AVR boards (except for megaAVR) - Uno, Mega etc.
