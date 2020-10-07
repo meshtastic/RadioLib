@@ -554,7 +554,8 @@ int16_t SX126x::startReceiveDutyCycleAuto(uint16_t senderPreambleLength, uint16_
 
 int16_t SX126x::startReceiveCommon() {
   // set DIO mapping
-  int16_t state = setDioIrqParams(SX126X_IRQ_PREAMBLE_DETECTED | SX126X_IRQ_RX_DONE | SX126X_IRQ_TIMEOUT | SX126X_IRQ_CRC_ERR | SX126X_IRQ_HEADER_ERR, SX126X_IRQ_RX_DONE);
+  int16_t state = setDioIrqParams(SX126X_IRQ_PREAMBLE_DETECTED | SX126X_IRQ_HEADER_VALID | SX126X_IRQ_RX_DONE | SX126X_IRQ_TIMEOUT | SX126X_IRQ_CRC_ERR | SX126X_IRQ_HEADER_ERR, 
+      SX126X_IRQ_RX_DONE | SX126X_IRQ_CRC_ERR | SX126X_IRQ_HEADER_ERR);
   RADIOLIB_ASSERT(state);
 
   // set buffer pointers
