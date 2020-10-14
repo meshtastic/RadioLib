@@ -95,7 +95,7 @@
   #define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
   #define RADIOLIB_HARDWARE_SERIAL_PORT               &Serial1
 
-#elif (defined(NRF52832_XXAA) || defined(NRF52840_XXAA)) && !defined(ARDUINO_ARDUINO_NANO33BLE)
+#elif defined(NRF52_SERIES) && !defined(ARDUINO_ARDUINO_NANO33BLE)
   // Adafruit nRF52 boards
   #define RADIOLIB_PLATFORM                           "Adafruit nRF52"
   #define RADIOLIB_PIN_TYPE                           uint32_t
