@@ -68,7 +68,12 @@ int16_t SX1262::setFrequency(float freq, bool calibrate) {
   }
 
   // set frequency
-  return(SX126x::setFrequencyRaw(freq));
+  int16_t res = SX126x::setFrequencyRaw(freq);
+  if(res != ERR_NONE) {
+      // The first setFreq after calibrate might return an error, just retry once
+      res = SX126x::setFrequencyRaw(freq);
+  }
+  return(res);
 }
 
 int16_t SX1262::setOutputPower(int8_t power) {
