@@ -1655,6 +1655,7 @@ int16_t SX126x::SPItransfer(uint8_t* cmd, uint8_t cmdLen, bool write, uint8_t* d
       return(ERR_SPI_CMD_TIMEOUT);
     }
   }
+  delayMicroseconds(1000); // If switching from sleep to standby datasheet says min delay of 100uS before clocking out MOSI, but I needed 1ms!
 
   // start transfer
   spi->beginTransaction(spiSettings);
