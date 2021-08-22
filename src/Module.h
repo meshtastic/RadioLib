@@ -37,7 +37,7 @@ class Module {
       \param rst Arduino pin to be used as hardware reset for the module. Defaults to NC (unused).
     */
 #ifdef RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
-    Module(RADIOLIB_PIN_TYPE rx, RADIOLIB_PIN_TYPE tx, HardwareSerial* serial = &RADIOLIB_HARDWARE_SERIAL_PORT, RADIOLIB_PIN_TYPE rst = RADIOLIB_NC);
+    Module(RADIOLIB_PIN_TYPE rx, RADIOLIB_PIN_TYPE tx, HardwareSerial* serial = RADIOLIB_HARDWARE_SERIAL_PORT, RADIOLIB_PIN_TYPE rst = RADIOLIB_NC);
 #else
     Module(RADIOLIB_PIN_TYPE rx, RADIOLIB_PIN_TYPE tx, HardwareSerial* serial = nullptr, RADIOLIB_PIN_TYPE rst = RADIOLIB_NC);
 #endif
