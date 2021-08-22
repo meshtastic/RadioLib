@@ -1,5 +1,6 @@
 #if !defined(_RADIOLIB_BUILD_OPTIONS_H)
 #define _RADIOLIB_BUILD_OPTIONS_H
+#endif
 
 #if ARDUINO >= 100
   #include "Arduino.h"
