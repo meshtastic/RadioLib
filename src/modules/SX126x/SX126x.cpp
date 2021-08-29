@@ -5,7 +5,7 @@ SX126x::SX126x(Module* mod) : PhysicalLayer(SX126X_FREQUENCY_STEP_SIZE, SX126X_M
   _mod = mod;
 }
 
-int16_t SX126x::begin(float bw, uint8_t sf, uint8_t cr, uint8_t syncWord, uint16_t preambleLength, float tcxoVoltage, bool useRegulatorLDO) {
+int16_t SX126x::begin(float bw, uint8_t sf, uint8_t cr, uint8_t syncWord, float currentLimit, uint16_t preambleLength, float tcxoVoltage, bool useRegulatorLDO) {
   // set module properties
   _mod->init(RADIOLIB_USE_SPI);
   Module::pinMode(_mod->getIrq(), INPUT);
@@ -57,13 +57,13 @@ int16_t SX126x::begin(float bw, uint8_t sf, uint8_t cr, uint8_t syncWord, uint16
   state = setSyncWord(syncWord);
   RADIOLIB_ASSERT(state);
 
+  state = setCurrentLimit(currentLimit);
+  RADIOLIB_ASSERT(state);
+
   state = setPreambleLength(preambleLength);
   RADIOLIB_ASSERT(state);
 
   // set publicly accessible settings that are not a part of begin method
-  state = setCurrentLimit(60.0);
-  RADIOLIB_ASSERT(state);
-
   state = setDio2AsRfSwitch(true);
   RADIOLIB_ASSERT(state);
 
@@ -76,7 +76,7 @@ int16_t SX126x::begin(float bw, uint8_t sf, uint8_t cr, uint8_t syncWord, uint16
   return(state);
 }
 
-int16_t SX126x::beginFSK(float br, float freqDev, float rxBw, uint16_t preambleLength, float tcxoVoltage, bool useRegulatorLDO) {
+int16_t SX126x::beginFSK(float br, float freqDev, float rxBw, float currentLimit, uint16_t preambleLength, float dataShaping, float tcxoVoltage, bool useRegulatorLDO) {
   // set module properties
   _mod->init(RADIOLIB_USE_SPI);
   Module::pinMode(_mod->getIrq(), INPUT);
@@ -121,7 +121,10 @@ int16_t SX126x::beginFSK(float br, float freqDev, float rxBw, uint16_t preambleL
   state = setRxBandwidth(rxBw);
   RADIOLIB_ASSERT(state);
 
-  state = setCurrentLimit(60.0);
+  state = setCurrentLimit(currentLimit);
+  RADIOLIB_ASSERT(state);
+
+  state = setDataShaping(dataShaping);
   RADIOLIB_ASSERT(state);
 
   state = setPreambleLength(preambleLength);
@@ -135,14 +138,11 @@ int16_t SX126x::beginFSK(float br, float freqDev, float rxBw, uint16_t preambleL
   RADIOLIB_ASSERT(state);
 
   // set publicly accessible settings that are not a part of begin method
-  uint8_t sync[] = {0x12, 0xAD};
+  uint8_t sync[] = {0x2D, 0x01};
   state = setSyncWord(sync, 2);
   RADIOLIB_ASSERT(state);
 
-  state = setDataShaping(RADIOLIB_SHAPING_NONE);
-  RADIOLIB_ASSERT(state);
-
-  state = setEncoding(RADIOLIB_ENCODING_NRZ);
+  state = setWhitening(true, 0x01FF);
   RADIOLIB_ASSERT(state);
 
   state = variablePacketLengthMode(SX126X_MAX_PACKET_LENGTH);
@@ -404,11 +404,11 @@ int16_t SX126x::standby(uint8_t mode) {
 }
 
 void SX126x::setDio1Action(void (*func)(void)) {
-  Module::attachInterrupt(RADIOLIB_DIGITAL_PIN_TO_INTERRUPT(_mod->getIrq()), func, RISING);
+  attachInterrupt(digitalPinToInterrupt(_mod->getIrq()), func, RISING);
 }
 
 void SX126x::clearDio1Action() {
-  Module::detachInterrupt(RADIOLIB_DIGITAL_PIN_TO_INTERRUPT(_mod->getIrq()));
+  detachInterrupt(digitalPinToInterrupt(_mod->getIrq()));
 }
 
 int16_t SX126x::startTransmit(uint8_t* data, size_t len, uint8_t addr) {
@@ -565,14 +565,10 @@ int16_t SX126x::startReceiveCommon() {
   // clear interrupt flags
   state = clearIrqStatus();
 
-  // restore original packet length
-  uint8_t modem = getPacketType();
-  if(modem == SX126X_PACKET_TYPE_LORA) {
+  // set implicit mode and expected len if applicable
+  if(_headerType == SX126X_LORA_HEADER_IMPLICIT && getPacketType() == SX126X_PACKET_TYPE_LORA) {
     state = setPacketParams(_preambleLength, _crcType, _implicitLen, _headerType);
-  } else if(modem == SX126X_PACKET_TYPE_GFSK) {
-    state = setPacketParamsFSK(_preambleLengthFSK, _crcTypeFSK, _syncWordLength, _addrComp, _whitening, _packetType);
-  } else {
-    return(ERR_UNKNOWN);
+    RADIOLIB_ASSERT(state);
   }
 
   return(state);
@@ -814,47 +810,47 @@ int16_t SX126x::setRxBandwidth(float rxBw) {
   _rxBwKhz = rxBw;
 
   // check allowed receiver bandwidth values
-  if(fabs(rxBw - 4.8) <= 0.001) {
+  if(abs(rxBw - 4.8) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_4_8;
-  } else if(fabs(rxBw - 5.8) <= 0.001) {
+  } else if(abs(rxBw - 5.8) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_5_8;
-  } else if(fabs(rxBw - 7.3) <= 0.001) {
+  } else if(abs(rxBw - 7.3) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_7_3;
-  } else if(fabs(rxBw - 9.7) <= 0.001) {
+  } else if(abs(rxBw - 9.7) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_9_7;
-  } else if(fabs(rxBw - 11.7) <= 0.001) {
+  } else if(abs(rxBw - 11.7) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_11_7;
-  } else if(fabs(rxBw - 14.6) <= 0.001) {
+  } else if(abs(rxBw - 14.6) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_14_6;
-  } else if(fabs(rxBw - 19.5) <= 0.001) {
+  } else if(abs(rxBw - 19.5) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_19_5;
-  } else if(fabs(rxBw - 23.4) <= 0.001) {
+  } else if(abs(rxBw - 23.4) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_23_4;
-  } else if(fabs(rxBw - 29.3) <= 0.001) {
+  } else if(abs(rxBw - 29.3) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_29_3;
-  } else if(fabs(rxBw - 39.0) <= 0.001) {
+  } else if(abs(rxBw - 39.0) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_39_0;
-  } else if(fabs(rxBw - 46.9) <= 0.001) {
+  } else if(abs(rxBw - 46.9) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_46_9;
-  } else if(fabs(rxBw - 58.6) <= 0.001) {
+  } else if(abs(rxBw - 58.6) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_58_6;
-  } else if(fabs(rxBw - 78.2) <= 0.001) {
+  } else if(abs(rxBw - 78.2) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_78_2;
-  } else if(fabs(rxBw - 93.8) <= 0.001) {
+  } else if(abs(rxBw - 93.8) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_93_8;
-  } else if(fabs(rxBw - 117.3) <= 0.001) {
+  } else if(abs(rxBw - 117.3) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_117_3;
-  } else if(fabs(rxBw - 156.2) <= 0.001) {
+  } else if(abs(rxBw - 156.2) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_156_2;
-  } else if(fabs(rxBw - 187.2) <= 0.001) {
+  } else if(abs(rxBw - 187.2) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_187_2;
-  } else if(fabs(rxBw - 234.3) <= 0.001) {
+  } else if(abs(rxBw - 234.3) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_234_3;
-  } else if(fabs(rxBw - 312.0) <= 0.001) {
+  } else if(abs(rxBw - 312.0) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_312_0;
-  } else if(fabs(rxBw - 373.6) <= 0.001) {
+  } else if(abs(rxBw - 373.6) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_373_6;
-  } else if(fabs(rxBw - 467.0) <= 0.001) {
+  } else if(abs(rxBw - 467.0) <= 0.001) {
     _rxBw = SX126X_GFSK_RX_BW_467_0;
   } else {
     return(ERR_INVALID_RX_BANDWIDTH);
@@ -864,31 +860,26 @@ int16_t SX126x::setRxBandwidth(float rxBw) {
   return(setModulationParamsFSK(_br, _pulseShape, _rxBw, _freqDev));
 }
 
-int16_t SX126x::setDataShaping(uint8_t sh) {
+int16_t SX126x::setDataShaping(float sh) {
   // check active modem
   if(getPacketType() != SX126X_PACKET_TYPE_GFSK) {
     return(ERR_WRONG_MODEM);
   }
 
-  // set data shaping
-  switch(sh) {
-    case RADIOLIB_SHAPING_NONE:
-      _pulseShape = SX126X_GFSK_FILTER_NONE;
-      break;
-    case RADIOLIB_SHAPING_0_3:
-      _pulseShape = SX126X_GFSK_FILTER_GAUSS_0_3;
-      break;
-    case RADIOLIB_SHAPING_0_5:
-      _pulseShape = SX126X_GFSK_FILTER_GAUSS_0_5;
-      break;
-    case RADIOLIB_SHAPING_0_7:
-      _pulseShape = SX126X_GFSK_FILTER_GAUSS_0_7;
-      break;
-    case RADIOLIB_SHAPING_1_0:
-      _pulseShape = SX126X_GFSK_FILTER_GAUSS_1;
-      break;
-    default:
-      return(ERR_INVALID_DATA_SHAPING);
+  // check allowed values
+  sh *= 10.0;
+  if(abs(sh - 0.0) <= 0.001) {
+    _pulseShape = SX126X_GFSK_FILTER_NONE;
+  } else if(abs(sh - 3.0) <= 0.001) {
+    _pulseShape = SX126X_GFSK_FILTER_GAUSS_0_3;
+  } else if(abs(sh - 5.0) <= 0.001) {
+    _pulseShape = SX126X_GFSK_FILTER_GAUSS_0_5;
+  } else if(abs(sh - 7.0) <= 0.001) {
+    _pulseShape = SX126X_GFSK_FILTER_GAUSS_0_7;
+  } else if(abs(sh - 10.0) <= 0.001) {
+    _pulseShape = SX126X_GFSK_FILTER_GAUSS_1;
+  } else {
+    return(ERR_INVALID_DATA_SHAPING);
   }
 
   // update modulation parameters
@@ -1257,27 +1248,27 @@ int16_t SX126x::setTCXO(float voltage, uint32_t delay) {
   }
 
   // check 0 V disable
-  if(fabs(voltage - 0.0) <= 0.001) {
+  if(abs(voltage - 0.0) <= 0.001) {
     return(reset(true));
   }
 
   // check alowed voltage values
   uint8_t data[4];
-  if(fabs(voltage - 1.6) <= 0.001) {
+  if(abs(voltage - 1.6) <= 0.001) {
     data[0] = SX126X_DIO3_OUTPUT_1_6;
-  } else if(fabs(voltage - 1.7) <= 0.001) {
+  } else if(abs(voltage - 1.7) <= 0.001) {
     data[0] = SX126X_DIO3_OUTPUT_1_7;
-  } else if(fabs(voltage - 1.8) <= 0.001) {
+  } else if(abs(voltage - 1.8) <= 0.001) {
     data[0] = SX126X_DIO3_OUTPUT_1_8;
-  } else if(fabs(voltage - 2.2) <= 0.001) {
+  } else if(abs(voltage - 2.2) <= 0.001) {
     data[0] = SX126X_DIO3_OUTPUT_2_2;
-  } else if(fabs(voltage - 2.4) <= 0.001) {
+  } else if(abs(voltage - 2.4) <= 0.001) {
     data[0] = SX126X_DIO3_OUTPUT_2_4;
-  } else if(fabs(voltage - 2.7) <= 0.001) {
+  } else if(abs(voltage - 2.7) <= 0.001) {
     data[0] = SX126X_DIO3_OUTPUT_2_7;
-  } else if(fabs(voltage - 3.0) <= 0.001) {
+  } else if(abs(voltage - 3.0) <= 0.001) {
     data[0] = SX126X_DIO3_OUTPUT_3_0;
-  } else if(fabs(voltage - 3.3) <= 0.001) {
+  } else if(abs(voltage - 3.3) <= 0.001) {
     data[0] = SX126X_DIO3_OUTPUT_3_3;
   } else {
     return(ERR_INVALID_TCXO_VOLTAGE);
@@ -1506,7 +1497,7 @@ int16_t SX126x::fixSensitivity() {
   RADIOLIB_ASSERT(state);
 
   // fix the value for LoRa with 500 kHz bandwidth
-  if((getPacketType() == SX126X_PACKET_TYPE_LORA) && (fabs(_bwKhz - 500.0) <= 0.001)) {
+  if((getPacketType() == SX126X_PACKET_TYPE_LORA) && (abs(_bwKhz - 500.0) <= 0.001)) {
     sensitivityConfig &= 0xFB;
   } else {
     sensitivityConfig |= 0x04;
@@ -1644,14 +1635,17 @@ int16_t SX126x::SPItransfer(uint8_t* cmd, uint8_t cmdLen, bool write, uint8_t* d
   #endif
 
   // pull NSS low
-  Module::digitalWrite(_mod->getCs(), LOW);
+  uint8_t cs = _mod->getCs();
+  if(cs != RADIOLIB_NC)
+    Module::digitalWrite(cs, LOW);
 
   // ensure BUSY is low (state machine ready)
   uint32_t start = Module::millis();
   while(Module::digitalRead(_mod->getGpio())) {
     Module::yield();
     if(Module::millis() - start >= timeout) {
-      Module::digitalWrite(_mod->getCs(), HIGH);
+      if(cs != RADIOLIB_NC)
+        Module::digitalWrite(cs, HIGH);
       return(ERR_SPI_CMD_TIMEOUT);
     }
   }
@@ -1712,7 +1706,8 @@ int16_t SX126x::SPItransfer(uint8_t* cmd, uint8_t cmdLen, bool write, uint8_t* d
 
   // stop transfer
   spi->endTransaction();
-  Module::digitalWrite(_mod->getCs(), HIGH);
+  if(cs != RADIOLIB_NC)
+    Module::digitalWrite(cs, HIGH);
 
   // wait for BUSY to go high and then low
   if(waitForBusy) {

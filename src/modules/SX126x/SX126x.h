@@ -367,6 +367,8 @@ class SX126x: public PhysicalLayer {
 
       \param syncWord 1-byte LoRa sync word.
 
+      \param currentLimit Current protection limit in mA.
+
       \param preambleLength LoRa preamble length in symbols. Allowed values range from 1 to 65535.
 
       \param tcxoVoltage TCXO reference voltage to be set on DIO3. Defaults to 1.6 V, set to 0 to skip.
@@ -375,7 +377,7 @@ class SX126x: public PhysicalLayer {
 
       \returns \ref status_codes
     */
-    int16_t begin(float bw, uint8_t sf, uint8_t cr, uint8_t syncWord, uint16_t preambleLength, float tcxoVoltage, bool useRegulatorLDO = false);
+    int16_t begin(float bw, uint8_t sf, uint8_t cr, uint8_t syncWord, float currentLimit, uint16_t preambleLength, float tcxoVoltage, bool useRegulatorLDO = false);
 
     /*!
       \brief Initialization method for FSK modem.
@@ -386,7 +388,11 @@ class SX126x: public PhysicalLayer {
 
       \param rxBw Receiver bandwidth in kHz. Allowed values are 4.8, 5.8, 7.3, 9.7, 11.7, 14.6, 19.5, 23.4, 29.3, 39.0, 46.9, 58.6, 78.2, 93.8, 117.3, 156.2, 187.2, 234.3, 312.0, 373.6 and 467.0 kHz.
 
+      \param currentLimit Current protection limit in mA.
+
       \param preambleLength FSK preamble length in bits. Allowed values range from 0 to 65535.
+
+      \param dataShaping Time-bandwidth product of the Gaussian filter to be used for shaping. Allowed values are 0.3, 0.5, 0.7 and 1.0. Set to 0 to disable shaping.
 
       \param tcxoVoltage TCXO reference voltage to be set on DIO3. Defaults to 1.6 V, set to 0 to skip.
 
@@ -394,7 +400,7 @@ class SX126x: public PhysicalLayer {
 
       \returns \ref status_codes
     */
-    int16_t beginFSK(float br, float freqDev, float rxBw, uint16_t preambleLength, float tcxoVoltage, bool useRegulatorLDO = false);
+    int16_t beginFSK(float br, float freqDev, float rxBw, float currentLimit, uint16_t preambleLength, float dataShaping, float tcxoVoltage, bool useRegulatorLDO = false);
 
     /*!
       \brief Reset method. Will reset the chip to the default state using RST pin.
@@ -662,7 +668,7 @@ class SX126x: public PhysicalLayer {
 
       \returns \ref status_codes
     */
-    int16_t setDataShaping(uint8_t sh) override;
+    int16_t setDataShaping(float sh) override;
 
     /*!
       \brief Sets FSK sync word in the form of array of up to 8 bytes.
@@ -908,8 +914,6 @@ class SX126x: public PhysicalLayer {
    */
    void readBit(RADIOLIB_PIN_TYPE pin);
 
-    uint16_t getIrqStatus();
-    
 #ifndef RADIOLIB_GODMODE
   protected:
 #endif
@@ -923,12 +927,13 @@ class SX126x: public PhysicalLayer {
     int16_t writeBuffer(uint8_t* data, uint8_t numBytes, uint8_t offset = 0x00);
     int16_t readBuffer(uint8_t* data, uint8_t numBytes);
     int16_t setDioIrqParams(uint16_t irqMask, uint16_t dio1Mask, uint16_t dio2Mask = SX126X_IRQ_NONE, uint16_t dio3Mask = SX126X_IRQ_NONE);
+    uint16_t getIrqStatus();
     int16_t clearIrqStatus(uint16_t clearIrqParams = SX126X_IRQ_ALL);
     int16_t setRfFrequency(uint32_t frf);
     int16_t calibrateImage(uint8_t* data);
     uint8_t getPacketType();
     int16_t setTxParams(uint8_t power, uint8_t rampTime = SX126X_PA_RAMP_200U);
-    int16_t setModulationParams(uint8_t sf, uint8_t bw, uint8_t cr, uint8_t ldro);
+    int16_t setModulationParams(uint8_t sf, uint8_t bw, uint8_t cr, uint8_t ldro = 0xFF);
     int16_t setModulationParamsFSK(uint32_t br, uint8_t pulseShape, uint8_t rxBw, uint32_t freqDev);
     int16_t setPacketParams(uint16_t preambleLength, uint8_t crcType, uint8_t payloadLength, uint8_t headerType, uint8_t invertIQ = SX126X_LORA_IQ_STANDARD);
     int16_t setPacketParamsFSK(uint16_t preambleLength, uint8_t crcType, uint8_t syncWordLength, uint8_t addrComp, uint8_t whitening, uint8_t packetType = SX126X_GFSK_PACKET_VARIABLE, uint8_t payloadLength = 0xFF, uint8_t preambleDetectorLength = SX126X_GFSK_PREAMBLE_DETECT_16);
