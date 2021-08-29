@@ -570,11 +570,13 @@ class SX127x: public PhysicalLayer {
 
       \param syncWord %LoRa sync word.
 
+      \param currentLimit Trim value for OCP (over current protection) in mA.
+
       \param preambleLength Length of %LoRa transmission preamble in symbols.
 
       \returns \ref status_codes
     */
-    int16_t begin(uint8_t chipVersion, uint8_t syncWord, uint16_t preambleLength);
+    int16_t begin(uint8_t chipVersion, uint8_t syncWord, uint8_t currentLimit, uint16_t preambleLength);
 
     /*!
       \brief Reset method. Will reset the chip to the default state using RST pin. Declared pure virtual since SX1272 and SX1278 implementations differ.
@@ -592,13 +594,15 @@ class SX127x: public PhysicalLayer {
 
       \param rxBw Receiver bandwidth in kHz.
 
+      \param currentLimit Trim value for OCP (over current protection) in mA.
+
       \param preambleLength Length of FSK preamble in bits.
 
       \param enableOOK Flag to specify OOK mode. This modulation is similar to FSK.
 
       \returns \ref status_codes
     */
-    int16_t beginFSK(uint8_t chipVersion, float br, float freqDev, float rxBw, uint16_t preambleLength, bool enableOOK);
+    int16_t beginFSK(uint8_t chipVersion, float br, float freqDev, float rxBw, uint8_t currentLimit, uint16_t preambleLength, bool enableOOK);
 
     /*!
       \brief Binary transmit method. Will transmit arbitrary binary data up to 255 bytes long using %LoRa or up to 63 bytes using FSK modem.
