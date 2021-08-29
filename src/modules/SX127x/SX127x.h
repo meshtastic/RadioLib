@@ -970,17 +970,6 @@ class SX127x: public PhysicalLayer {
     int16_t setEncoding(uint8_t encoding) override;
 
     /*!
-      \brief Reads i2c registers to see if the device thinks IRQ/DIO0 is asserted
-
-      \returns \ref the current 8 pending irq flag bits (or 0 for nothing pending)
-    */
-    uint8_t getPendingIRQ();
-
-    #ifdef RADIOLIB_DEBUG
-      void regDump();
-    #endif
-    
-    /*!
       \brief Reads currently active IRQ flags, can be used to check which event caused an interrupt.
       In LoRa mode, this is the content of SX127X_REG_IRQ_FLAGS register.
       In FSK mode, this is the contents of SX127X_REG_IRQ_FLAGS_2 (MSB) and SX127X_REG_IRQ_FLAGS_1 (LSB) registers.

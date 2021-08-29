@@ -3,9 +3,10 @@
 
 SX127x::SX127x(Module* mod) : PhysicalLayer(SX127X_FREQUENCY_STEP_SIZE, SX127X_MAX_PACKET_LENGTH) {
   _mod = mod;
+  _packetLengthQueried = false;
 }
 
-int16_t SX127x::begin(uint8_t chipVersion, uint8_t syncWord, uint16_t preambleLength) {
+int16_t SX127x::begin(uint8_t chipVersion, uint8_t syncWord, uint8_t currentLimit, uint16_t preambleLength) {
   // set module properties
   _mod->init(RADIOLIB_USE_SPI);
   Module::pinMode(_mod->getIrq(), INPUT_PULLUP);
@@ -39,7 +40,7 @@ int16_t SX127x::begin(uint8_t chipVersion, uint8_t syncWord, uint16_t preambleLe
   RADIOLIB_ASSERT(state);
 
   // set over current protection
-  state = SX127x::setCurrentLimit(60);
+  state = SX127x::setCurrentLimit(currentLimit);
   RADIOLIB_ASSERT(state);
 
   // set preamble length
@@ -52,7 +53,7 @@ int16_t SX127x::begin(uint8_t chipVersion, uint8_t syncWord, uint16_t preambleLe
   return(state);
 }
 
-int16_t SX127x::beginFSK(uint8_t chipVersion, float br, float freqDev, float rxBw, uint16_t preambleLength, bool enableOOK) {
+int16_t SX127x::beginFSK(uint8_t chipVersion, float br, float freqDev, float rxBw, uint8_t currentLimit, uint16_t preambleLength, bool enableOOK) {
   // set module properties
   _mod->init(RADIOLIB_USE_SPI);
   Module::pinMode(_mod->getIrq(), INPUT);
@@ -62,6 +63,8 @@ int16_t SX127x::beginFSK(uint8_t chipVersion, float br, float freqDev, float rxB
     RADIOLIB_DEBUG_PRINTLN(F("No SX127x found!"));
     _mod->term(RADIOLIB_USE_SPI);
     return(ERR_CHIP_NOT_FOUND);
+  } else {
+    RADIOLIB_DEBUG_PRINTLN(F("Found SX127x!"));
   }
   RADIOLIB_DEBUG_PRINTLN(F("M\tSX127x"));
 
@@ -104,7 +107,7 @@ int16_t SX127x::beginFSK(uint8_t chipVersion, float br, float freqDev, float rxB
   RADIOLIB_ASSERT(state);
 
   // set over current protection
-  state = SX127x::setCurrentLimit(60);
+  state = SX127x::setCurrentLimit(currentLimit);
   RADIOLIB_ASSERT(state);
 
   // set preamble length
@@ -374,7 +377,7 @@ int16_t SX127x::startReceive(uint8_t len, uint8_t mode) {
   int16_t modem = getActiveModem();
   if(modem == SX127X_LORA) {
     // set DIO pin mapping
-    state = _mod->SPIsetRegValue(SX127X_REG_DIO_MAPPING_1, SX127X_DIO0_RX_DONE | SX127X_DIO1_RX_TIMEOUT, 7, 4);
+    state |= _mod->SPIsetRegValue(SX127X_REG_DIO_MAPPING_1, SX127X_DIO0_RX_DONE | SX127X_DIO1_RX_TIMEOUT, 7, 4);
 
     // set expected packet length for SF6
     if(_sf == 6) {
@@ -1013,12 +1016,6 @@ int16_t SX127x::setRSSIConfig(uint8_t smoothingSamples, int8_t offset) {
   state = _mod->SPIsetRegValue(SX127X_REG_RSSI_CONFIG, offset, 7, 3);
   state |= _mod->SPIsetRegValue(SX127X_REG_RSSI_CONFIG, smoothingSamples, 2, 0);
   return(state);
-}
-
-uint8_t SX127x::getPendingIRQ() {
-  // Note: the mask register uses 0 to mean UNMASKED
-  uint8_t f = _mod->SPIgetRegValue(SX127X_REG_IRQ_FLAGS), m = ~_mod->SPIgetRegValue(SX127X_REG_IRQ_FLAGS_MASK);
-  return f & m;
 }
 
 int16_t SX127x::setEncoding(uint8_t encoding) {
