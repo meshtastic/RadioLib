@@ -913,6 +913,8 @@ class SX126x: public PhysicalLayer {
      \param pin Ignored.
    */
    void readBit(RADIOLIB_PIN_TYPE pin);
+  
+  uint16_t getIrqStatus();
 
 #ifndef RADIOLIB_GODMODE
   protected:
@@ -927,7 +929,6 @@ class SX126x: public PhysicalLayer {
     int16_t writeBuffer(uint8_t* data, uint8_t numBytes, uint8_t offset = 0x00);
     int16_t readBuffer(uint8_t* data, uint8_t numBytes);
     int16_t setDioIrqParams(uint16_t irqMask, uint16_t dio1Mask, uint16_t dio2Mask = SX126X_IRQ_NONE, uint16_t dio3Mask = SX126X_IRQ_NONE);
-    uint16_t getIrqStatus();
     int16_t clearIrqStatus(uint16_t clearIrqParams = SX126X_IRQ_ALL);
     int16_t setRfFrequency(uint32_t frf);
     int16_t calibrateImage(uint8_t* data);
@@ -955,21 +956,10 @@ class SX126x: public PhysicalLayer {
     int16_t fixImplicitTimeout();
     int16_t fixInvertedIQ(uint8_t iqConfig);
 
-#if !defined(RADIOLIB_GODMODE) && !defined(RADIOLIB_LOW_LEVEL)
-  protected:
+#ifndef RADIOLIB_GODMODE
+  private:
 #endif
     Module* _mod;
-
-    // common low-level SPI interface
-    int16_t SPIwriteCommand(uint8_t cmd, uint8_t* data, uint8_t numBytes, bool waitForBusy = true);
-    int16_t SPIwriteCommand(uint8_t* cmd, uint8_t cmdLen, uint8_t* data, uint8_t numBytes, bool waitForBusy = true);
-    int16_t SPIreadCommand(uint8_t cmd, uint8_t* data, uint8_t numBytes, bool waitForBusy = true);
-    int16_t SPIreadCommand(uint8_t* cmd, uint8_t cmdLen, uint8_t* data, uint8_t numBytes, bool waitForBusy = true);
-    int16_t SPItransfer(uint8_t* cmd, uint8_t cmdLen, bool write, uint8_t* dataOut, uint8_t* dataIn, uint8_t numBytes, bool waitForBusy, uint32_t timeout = 5000);
-
-#if !defined(RADIOLIB_GODMODE)
-  protected:
-#endif
 
     uint8_t _bw = 0, _sf = 0, _cr = 0, _ldro = 0, _crcType = 0, _headerType = 0;
     uint16_t _preambleLength = 0;
@@ -988,6 +978,12 @@ class SX126x: public PhysicalLayer {
     size_t _implicitLen = 0;
 
     int16_t config(uint8_t modem);
+    // common low-level SPI interface
+    int16_t SPIwriteCommand(uint8_t cmd, uint8_t* data, uint8_t numBytes, bool waitForBusy = true);
+    int16_t SPIwriteCommand(uint8_t* cmd, uint8_t cmdLen, uint8_t* data, uint8_t numBytes, bool waitForBusy = true);
+    int16_t SPIreadCommand(uint8_t cmd, uint8_t* data, uint8_t numBytes, bool waitForBusy = true);
+    int16_t SPIreadCommand(uint8_t* cmd, uint8_t cmdLen, uint8_t* data, uint8_t numBytes, bool waitForBusy = true);
+    int16_t SPItransfer(uint8_t* cmd, uint8_t cmdLen, bool write, uint8_t* dataOut, uint8_t* dataIn, uint8_t numBytes, bool waitForBusy, uint32_t timeout = 5000);
 };
 
 #endif
