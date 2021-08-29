@@ -424,7 +424,7 @@ class SX126x: public PhysicalLayer {
 
       \returns \ref status_codes
     */
-    int16_t transmit(uint8_t* data, size_t len, uint8_t addr = 0) override;
+    int16_t transmit(uint8_t* data, size_t len, uint8_t addr = 0);
 
     /*!
       \brief Blocking binary receive method.
@@ -436,7 +436,7 @@ class SX126x: public PhysicalLayer {
 
       \returns \ref status_codes
     */
-    int16_t receive(uint8_t* data, size_t len) override;
+    int16_t receive(uint8_t* data, size_t len);
 
     /*!
       \brief Starts direct mode transmission.
@@ -445,7 +445,7 @@ class SX126x: public PhysicalLayer {
 
       \returns \ref status_codes
     */
-    int16_t transmitDirect(uint32_t frf = 0) override;
+    int16_t transmitDirect(uint32_t frf = 0);
 
     /*!
       \brief Starts direct mode reception. Only implemented for PhysicalLayer compatibility, as %SX126x series does not support direct mode reception.
@@ -453,7 +453,7 @@ class SX126x: public PhysicalLayer {
 
       \returns \ref status_codes
     */
-    int16_t receiveDirect() override;
+    int16_t receiveDirect();
 
     /*!
       \brief Performs scan for LoRa transmission in the current channel. Detects both preamble and payload.
@@ -476,7 +476,7 @@ class SX126x: public PhysicalLayer {
 
       \returns \ref status_codes
     */
-    int16_t standby() override;
+    int16_t standby();
 
     /*!
       \brief Sets the module to standby mode.
@@ -513,7 +513,7 @@ class SX126x: public PhysicalLayer {
 
       \returns \ref status_codes
     */
-    int16_t startTransmit(uint8_t* data, size_t len, uint8_t addr = 0) override;
+    int16_t startTransmit(uint8_t* data, size_t len, uint8_t addr = 0);
 
     /*!
       \brief Interrupt-driven receive method. DIO1 will be activated when full packet is received.
@@ -558,7 +558,7 @@ class SX126x: public PhysicalLayer {
 
       \returns \ref status_codes
     */
-    int16_t readData(uint8_t* data, size_t len) override;
+    int16_t readData(uint8_t* data, size_t len);
 
     // configuration methods
 
@@ -632,7 +632,7 @@ class SX126x: public PhysicalLayer {
 
       \returns \ref status_codes
     */
-    int16_t setFrequencyDeviation(float freqDev) override;
+    int16_t setFrequencyDeviation(float freqDev);
 
     /*!
       \brief Sets FSK bit rate. Allowed values range from 0.6 to 300.0 kbps.
@@ -668,7 +668,7 @@ class SX126x: public PhysicalLayer {
 
       \returns \ref status_codes
     */
-    int16_t setDataShaping(float sh) override;
+    int16_t setDataShaping(float sh);
 
     /*!
       \brief Sets FSK sync word in the form of array of up to 8 bytes.
@@ -790,7 +790,7 @@ class SX126x: public PhysicalLayer {
 
       \returns Length of last received packet in bytes.
     */
-    size_t getPacketLength(bool update = true) override;
+    size_t getPacketLength(bool update = true);
 
     /*!
      \brief Set modem in fixed packet length mode. Available in FSK mode only.
@@ -863,7 +863,7 @@ class SX126x: public PhysicalLayer {
 
      \returns \ref status_codes
    */
-   int16_t setEncoding(uint8_t encoding) override;
+   int16_t setEncoding(uint8_t encoding);
 
    /*!
      \brief Some modules contain external RF switch controlled by two pins. This function gives RadioLib control over those two pins to automatically switch Rx and Tx state.
