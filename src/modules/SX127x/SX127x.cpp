@@ -1018,6 +1018,12 @@ int16_t SX127x::setRSSIConfig(uint8_t smoothingSamples, int8_t offset) {
   return(state);
 }
 
+uint8_t SX127x::getPendingIRQ() {
+  // Note: the mask register uses 0 to mean UNMASKED
+  uint8_t f = _mod->SPIgetRegValue(SX127X_REG_IRQ_FLAGS), m = ~_mod->SPIgetRegValue(SX127X_REG_IRQ_FLAGS_MASK);
+  return f & m;
+}
+
 int16_t SX127x::setEncoding(uint8_t encoding) {
   // check active modem
   if(getActiveModem() != SX127X_FSK_OOK) {
