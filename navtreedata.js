@@ -1,7 +1,30 @@
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this file.
+
+Copyright (C) 1997-2019 by Dimitri van Heesch
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of version 2 of the GNU General Public License as published by
+the Free Software Foundation
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+@licend  The above is the entire license notice
+for the JavaScript code in this file
+*/
 var NAVTREE =
 [
   [ "RadioLib", "index.html", [
     [ "RadioLib Documentation", "index.html", null ],
+    [ "Todo List", "todo.html", null ],
     [ "Modules", "modules.html", "modules" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
@@ -13,18 +36,19 @@ var NAVTREE =
         [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],
-    [ "Files", null, [
-      [ "File List", "files.html", "files" ]
+    [ "Files", "files.html", [
+      [ "File List", "files.html", "files_dup" ]
     ] ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"_a_x25_8h_source.html",
-"class_morse_client.html#a1be826249b4936e2b0bca20311714726",
-"class_s_x1279.html",
-"functions_r.html"
+"_a_f_s_k_8h_source.html",
+"class_module.html#a1d1a279cc7e1ab92e30c29c4dcca26a3",
+"class_s_x126x.html#a7a1579e2557c36a4a34b09039c0d0c71",
+"class_si4432.html#afb1f1ae46d04788aa42f6276efd231ac",
+"group__status__codes.html#gab18e3c068ca8d9e7c07e6b9473c5e0df"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

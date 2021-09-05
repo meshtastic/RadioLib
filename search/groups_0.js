@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['shield_20configuration',['Shield Configuration',['../group__shield__config.html',1,'']]],
-  ['status_20codes',['Status Codes',['../group__status__codes.html',1,'']]]
+  ['data_20shaping_20filter_20values_20aliases_2e_675',['Data shaping filter values aliases.',['../group__config__shaping.html',1,'']]]
 ];

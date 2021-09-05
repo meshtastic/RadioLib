@@ -5,5 +5,5 @@ var class_transport_layer =
     [ "openTransportConnection", "class_transport_layer.html#a36b1ceebca3643fb475607d3d92f5d63", null ],
     [ "receive", "class_transport_layer.html#a846492348f71d7328834076c9046dc3f", null ],
     [ "send", "class_transport_layer.html#a1d9cb76640868aa0338b52808e4f022d", null ],
-    [ "send", "class_transport_layer.html#ae3ffdf5c3f2def6edb49e999c37eccf1", null ]
+    [ "send", "class_transport_layer.html#afb001c6348bc19694090532cc5f00e52", null ]
 ];
