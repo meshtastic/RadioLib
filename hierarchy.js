@@ -3,6 +3,7 @@ var hierarchy =
     [ "AFSKClient", "class_a_f_s_k_client.html", null ],
     [ "AX25Client", "class_a_x25_client.html", null ],
     [ "AX25Frame", "class_a_x25_frame.html", null ],
+    [ "FSK4Client", "class_f_s_k4_client.html", null ],
     [ "HellClient", "class_hell_client.html", null ],
     [ "HTTPClient", "class_h_t_t_p_client.html", null ],
     [ "ISerial", "class_i_serial.html", [
@@ -11,7 +12,9 @@ var hierarchy =
       [ "XBeeSerial", "class_x_bee_serial.html", null ]
     ] ],
     [ "ITA2String", "class_i_t_a2_string.html", null ],
-    [ "Module", "class_module.html", null ],
+    [ "Module", "class_module.html", [
+      [ "SerialModule", "class_serial_module.html", null ]
+    ] ],
     [ "MorseClient", "class_morse_client.html", null ],
     [ "MQTTClient", "class_m_q_t_t_client.html", null ],
     [ "PhysicalLayer", "class_physical_layer.html", [

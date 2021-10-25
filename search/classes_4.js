@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['iserial_374',['ISerial',['../class_i_serial.html',1,'']]],
-  ['ita2string_375',['ITA2String',['../class_i_t_a2_string.html',1,'']]]
+  ['hc05_375',['HC05',['../class_h_c05.html',1,'']]],
+  ['hellclient_376',['HellClient',['../class_hell_client.html',1,'']]],
+  ['httpclient_377',['HTTPClient',['../class_h_t_t_p_client.html',1,'']]]
 ];
