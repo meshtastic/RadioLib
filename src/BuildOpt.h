@@ -787,7 +787,19 @@
     #undef micros
     inline unsigned long micros() { return((unsigned long)(STCV)); };
     #endif
-
+  #elif defined(PORTDUINO)
+    // Portduino (i.e. Arduino APIs but on top of Linux)
+    #define RADIOLIB_PLATFORM                           "Portduino"
+    #define RADIOLIB_PIN_TYPE                           uint8_t
+    #define RADIOLIB_PIN_MODE                           PinMode
+    #define RADIOLIB_PIN_STATUS                         PinStatus
+    #define RADIOLIB_INTERRUPT_STATUS                   RADIOLIB_PIN_STATUS
+    #define RADIOLIB_DIGITAL_PIN_TO_INTERRUPT(p)        digitalPinToInterrupt(p)
+    #define RADIOLIB_NC                                 (0xFF)
+    #define RADIOLIB_SOFTWARE_SERIAL_UNSUPPORTED
+    #define RADIOLIB_PROGMEM                            PROGMEM
+    #define RADIOLIB_PROGMEM_READ_BYTE(addr)            pgm_read_byte(addr)
+    #define RADIOLIB_DEFAULT_SPI                        SPI    
   #else
     // other Arduino platforms not covered by the above list - this may or may not work
     #define RADIOLIB_PLATFORM                           "Unknown Arduino"
