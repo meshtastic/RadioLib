@@ -800,6 +800,10 @@
     #define RADIOLIB_PROGMEM                            PROGMEM
     #define RADIOLIB_PROGMEM_READ_BYTE(addr)            pgm_read_byte(addr)
     #define RADIOLIB_DEFAULT_SPI                        SPI    
+    #define RADIOLIB_DEFAULT_SPI_SETTINGS               SPISettings(2000000, MSBFIRST, SPI_MODE0)
+    #define RADIOLIB_NONVOLATILE                        PROGMEM
+    #define RADIOLIB_NONVOLATILE_READ_BYTE(addr)        pgm_read_byte(addr)
+    #define RADIOLIB_TYPE_ALIAS(type, alias)            using alias = type;
   #else
     // other Arduino platforms not covered by the above list - this may or may not work
     #define RADIOLIB_PLATFORM                           "Unknown Arduino"
